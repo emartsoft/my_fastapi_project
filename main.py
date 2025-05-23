@@ -1,3 +1,4 @@
+import uvicorn
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
@@ -10,6 +11,9 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+    
 #create a dependency to get the database session
 def get_db():
     db = SessionLocal()
