@@ -7,12 +7,19 @@ import os
 # Load .env file
 load_dotenv()
 
-# Get DATABASE_URL from environment
 SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
 if SQLALCHEMY_DATABASE_URL is None:
     raise ValueError("DATABASE_URL environment variable not set")
 
-# Debug print to verify
+# Ensure pymysql dialect
+if not SQLALCHEMY_DATABASE_URL.startswith("mysql+pymysql://"):
+    SQLALCHEMY_DATABASE_URL = SQLALCHEMY_DATABASE_URL.replace("mysql://", "mysql+pymysql://")
+
+# Add ssl_ca if not present
+if "ssl_ca" not in SQLALCHEMY_DATABASE_URL:
+    ca_path = os.path.join(os.path.dirname(__file__), "tidb_ca.pem")
+    SQLALCHEMY_DATABASE_URL += f"?ssl_ca={ca_path}"
+
 print(f"Database URL: {SQLALCHEMY_DATABASE_URL}")
 
 # Create SQLAlchemy engine
